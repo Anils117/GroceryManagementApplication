@@ -140,6 +140,15 @@
         <url-pattern>/admin/users</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>AdminOrderServlet</servlet-name>
+        <servlet-class>com.grocery.servlets.AdminOrderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminOrderServlet</servlet-name>
+        <url-pattern>/admin/orders</url-pattern>
+    </servlet-mapping>
+    
     <!-- Error Pages -->
     <error-page>
         <error-code>404</error-code>
