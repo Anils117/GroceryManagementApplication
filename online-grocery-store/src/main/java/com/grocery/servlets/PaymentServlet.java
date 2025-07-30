@@ -78,6 +78,12 @@ public class PaymentServlet extends HttpServlet {
             return;
         }
         
+        // Check if cart is empty
+        if (CartUtils.isCartEmpty(session)) {
+            response.sendRedirect(request.getContextPath() + "/cart");
+            return;
+        }
+        
         // Get payment form data
         String cardNumber = request.getParameter("cardNumber");
         String expiryDate = request.getParameter("expiryDate");
@@ -106,13 +112,17 @@ public class PaymentServlet extends HttpServlet {
         }
         
         // Process payment
+        System.out.println("Processing payment for user: " + user.getUserId() + ", Amount: " + cartTotal);
+        
         Map<String, Object> paymentResult = paymentService.processPayment(
             cardNumber, expiryDate, cvv, cardHolderName, cartTotal);
         
-        if ((Boolean) paymentResult.get("success")) {
+        if (paymentResult != null && (Boolean) paymentResult.get("success")) {
             // Payment successful - create order
             String transactionId = (String) paymentResult.get("transactionId");
             String paymentMethod = (String) paymentResult.get("paymentMethod");
+            
+            System.out.println("Payment successful. Transaction ID: " + transactionId);
             
             Order order = orderService.createOrder(
                 user.getUserId(), cartItems, cartTotal, shippingAddress, paymentMethod, transactionId);
@@ -138,7 +148,7 @@ public class PaymentServlet extends HttpServlet {
             
         } else {
             // Payment failed
-            String errorMessage = (String) paymentResult.get("error");
+            String errorMessage = paymentResult != null ? (String) paymentResult.get("error") : "Payment processing failed";
             request.setAttribute("error", errorMessage);
             request.setAttribute("cartItems", cartItems);
             request.setAttribute("cartTotal", cartTotal);

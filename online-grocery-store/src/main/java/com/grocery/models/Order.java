@@ -3,6 +3,8 @@ package com.grocery.models;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -10,7 +12,7 @@ import java.util.List;
  */
 public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     public enum OrderStatus {
         PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
     }
@@ -132,7 +134,23 @@ public class Order implements Serializable {
     public int getTotalItems() {
         return orderItems != null ? orderItems.stream().mapToInt(OrderItem::getQuantity).sum() : 0;
     }
-    
+
+    public Date getOrderDateAsUtilDate() {
+        return Date.from(orderDate.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getOrderDateAsDate() {
+        return orderDate != null
+                ? Date.from(orderDate.atZone(ZoneId.systemDefault()).toInstant())
+                : null;
+    }
+
+    public Date getDeliveryDateAsDate() {
+        return deliveryDate != null
+                ? Date.from(deliveryDate.atZone(ZoneId.systemDefault()).toInstant())
+                : null;
+    }
+
     @Override
     public String toString() {
         return "Order{" +

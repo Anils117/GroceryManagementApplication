@@ -31,6 +31,13 @@ public class PaymentService {
                 return result;
             }
             
+            // Validate amount
+            if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+                result.put("success", false);
+                result.put("error", "Invalid payment amount");
+                return result;
+            }
+            
             // Simulate payment processing delay
             Thread.sleep(1000 + random.nextInt(2000)); // 1-3 seconds
             

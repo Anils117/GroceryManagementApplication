@@ -21,13 +21,51 @@ public class OrderService {
     
     public OrderService() {
         this.productService = new ProductService();
+        // Initialize with some sample orders for testing
+        initializeSampleOrders();
+    }
+    
+    /**
+     * Initialize sample orders for testing
+     */
+    private void initializeSampleOrders() {
+        try {
+            // Create sample order items
+            List<OrderItem> items1 = new ArrayList<>();
+            items1.add(new OrderItem(1, "Fresh Apples", new BigDecimal("3.99"), 2));
+            items1.add(new OrderItem(2, "Bananas", new BigDecimal("2.49"), 1));
+            
+            List<OrderItem> items2 = new ArrayList<>();
+            items2.add(new OrderItem(3, "Carrots", new BigDecimal("1.99"), 1));
+            items2.add(new OrderItem(4, "Spinach", new BigDecimal("2.99"), 1));
+            items2.add(new OrderItem(5, "Whole Milk", new BigDecimal("4.49"), 1));
+            
+            // Create sample orders
+            Order order1 = new Order(1, items1, new BigDecimal("10.47"),
+                                   "123 Main St, City, State 12345", "Visa");
+            order1.setOrderId(1001);
+            order1.setStatus(Order.OrderStatus.DELIVERED);
+            order1.setOrderDate(LocalDateTime.now().minusDays(5));
+            order1.setDeliveryDate(LocalDateTime.now().minusDays(2));
+            orders.put(order1.getOrderId(), order1);
+//
+            Order order2 = new Order(1, items2, new BigDecimal("9.47"),
+                                   "123 Main St, City, State 12345", "Mastercard");
+            order2.setOrderId(1002);
+            order2.setStatus(Order.OrderStatus.SHIPPED);
+            order2.setOrderDate(LocalDateTime.now().minusDays(2));
+            orders.put(order2.getOrderId(), order2);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     /**
      * Create a new order from cart items
      */
-    public Order createOrder(int userId, List<CartItem> cartItems, String shippingAddress, 
-                           String paymentMethod, String transactionId) {
+    public Order createOrder(int userId, List<CartItem> cartItems, BigDecimal cartTotal, String shippingAddress,
+                             String paymentMethod, String transactionId) {
         try {
             // Convert cart items to order items
             List<OrderItem> orderItems = cartItems.stream()
@@ -74,10 +112,15 @@ public class OrderService {
      * Get all orders for a user
      */
     public List<Order> getOrdersByUser(int userId) {
-        return orders.values().stream()
-                .filter(order -> order.getUserId() == userId)
-                .sorted((o1, o2) -> o2.getOrderDate().compareTo(o1.getOrderDate())) // Latest first
-                .collect(Collectors.toList());
+        try {
+            return orders.values().stream()
+                    .filter(order -> order.getUserId() == userId)
+                    .sorted((o1, o2) -> o2.getOrderDate().compareTo(o1.getOrderDate())) // Latest first
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
     
     /**
